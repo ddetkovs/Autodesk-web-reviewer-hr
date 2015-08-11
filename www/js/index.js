@@ -1,4 +1,6 @@
 
+var hostname = "http://livereview.atodesk.com:3000";
+//var hostname = "http://morning-stream-3036.herokuapp.com";
 var defaultUrn = 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6bW9kZWwyMDE1LTA4LTExLTAwLTIxLTI2LWhyZG1vd2d3ejhpb3N0anVlbGR3c3gxaXZ6eW0vUm9ib3RBcm0uZHdmeA==';
 var token = '';
 var pubnub = PUBNUB({
@@ -72,7 +74,7 @@ function getChannel(name, token, callback) {
 function getToken(callback) {
 
   $.ajax({
-    url: 'http://morning-stream-3036.herokuapp.com/api/token',
+    url: hostname+'/api/token',
     type: 'GET',
     contentType: 'application/json',
     success: function(data) {
@@ -128,6 +130,7 @@ function postComment() {
 	  	});
 	  	loadComments(token);
   });
+  $('#commentText')[0].value = '';
 }
 
 function loadComments(token) {

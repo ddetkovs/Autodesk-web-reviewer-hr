@@ -4,6 +4,11 @@ var credentials = (require('fs').existsSync('credentials.js') ?
 var express = require('express');
 var request = require('request');
 var router = express.Router();
+var OAuth = require('node-oauth');
+OAuth = OAuth('./oauth-settings.js');
+
+
+var loginStorage = {};
 // Generate access token
 // Your code here
 
@@ -66,7 +71,16 @@ var getToken = function(callback) {
     });
 }
 
+var getOauthCredents = function(callback) {
+
+
+	var oauthAuthorizer = OAuth.authorize('autodesk', {
+    auto: false
+  });
+}
+
 router.get('/token', function(req, res) {
+
 	var text = "client_id="+credentials.credentials.client_id+"&client_secret="+credentials.credentials.client_secret+"&grant_type=client_credentials";
 	request({
 	    url: 'https://developer-stg.api.autodesk.com/authentication/v1/authenticate',
