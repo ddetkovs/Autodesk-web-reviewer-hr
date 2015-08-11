@@ -3,47 +3,59 @@ var credentials = (require('fs').existsSync('credentials.js') ?
   : (console.log ('No credentials.js file present, assuming using CONSUMERKEY & CONSUMERSECRET system variables.'), require('../credentials_'))) ;
 var express = require('express');
 var request = require('request');
-
 var router = express.Router();
-
+var pubnub = require('pubnub');
 // Generate access token
 // Your code here
 
-router.post('/createchannel', function(req, res) {
+
+
+/*
+router.post('/getchannel', function(req, res) {
 	var data = '';
 	req.on('data', function(d) {
 		data+=d;
 	});
 
 	req.on('end', function() {
-		console.log(data);
-	var name = data.name;
-	getToken(function(token) {
-		request.post({
-			url: 'http://notifications-stg.api.autodesk.com/notifications/v1/channel/',
-			type: 'POST',
-			contentType: 'application/json',
-			data: JSON.stringify({
-				body: {
-					"channelName" : name,
-					"channelType" : 'broadcast'
+		var name = data;
+		getToken(function(token) {
+			request({
+				url: 'https://developer-stg.api.autodesk.com/notifications/v1/channel/'+name,
+				method: 'GET',
+				headers: {
+					"Access-Control-Allow-Origin": '*', Authorization: "Bearer "+token
 				}
-			}),
-			headers: {
-				"Access-Control-Allow-Origin": '*', Authorization: "Bearer "+token 
-			}
-		}, function(err, res, body) {
-			console.log(err);
-			console.log(res);
-			console.log(body);
+				}, function(err, response, body) {
+					if(response.statusCode === 200) {
+						console.log('getsucc:',response);
+						res.send(200, JSON.parse(response.body).Channel);
+					} else {
+						console.log('getdata:',JSON.parse(response.body).Channel);
+						request.post({
+							url: 'https://developer-stg.api.autodesk.com/notifications/v1/channel',
+							type: 'POST',
+							body: JSON.stringify({
+									"channelName" : name,
+									"channelType" : 'BROADCAST'
+								}),
+							headers: {
+								'Content-Type': 'text/json',
+								"Access-Control-Allow-Origin": '*', 
+								Authorization: "Bearer "+token 
+							}
+						}, function(err, resp, b) {
+							console.log(resp.statusCode);
+							res.send(resp.statusCode, JSON.parse(resp.body).channelId);
+						});
+					}
+			});
 		});
 	});
-	});
 });
-
+*/
 var getToken = function(callback) {
 	var text = "client_id="+credentials.credentials.client_id+"&client_secret="+credentials.credentials.client_secret+"&grant_type=client_credentials";
-	console.log(text);
 	request({
 	    url: 'https://developer-stg.api.autodesk.com/authentication/v1/authenticate',
 	    method: 'POST',
@@ -57,7 +69,6 @@ var getToken = function(callback) {
 
 router.get('/token', function(req, res) {
 	var text = "client_id="+credentials.credentials.client_id+"&client_secret="+credentials.credentials.client_secret+"&grant_type=client_credentials";
-	console.log(text);
 	request({
 	    url: 'https://developer-stg.api.autodesk.com/authentication/v1/authenticate',
 	    method: 'POST',
