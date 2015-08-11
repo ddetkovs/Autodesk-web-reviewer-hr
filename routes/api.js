@@ -4,7 +4,6 @@ var credentials = (require('fs').existsSync('credentials.js') ?
 var express = require('express');
 var request = require('request');
 var router = express.Router();
-var pubnub = require('pubnub');
 // Generate access token
 // Your code here
 
