@@ -33,6 +33,7 @@
     <!-- Autodesk.ADN.Toolkit.Viewer -->
     <script src="https://rawgit.com/Developer-Autodesk/library-javascript-view.and.data.api/master/js/Autodesk.ADN.Toolkit.Viewer.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js"></script>
     <script src="/js/index.js"></script>
 </head>
 
@@ -77,12 +78,19 @@
             <p>Are your editors waiting to hear from you? Let Web Reviewer do the work for you.</p>
         </div>
     </div>
-    <div class="container">
-        
+    <div class="container" id="leftbar">
+    <h2>Comments</h2>
+        <div id="comments"></div>
+        <form name="myform">
+            <input id="commentText" type="text">
+            <input onClick="postComment()" type="button" value="Comment">
+        </form>
+    </div>
+    <div class="container" id="rightbar">
+
         <h2>Your File</h2>
         
-        <div id="viewerDiv"></div>
-
+        <div id="viewer"></div>
         <hr>
         
         <footer>
@@ -91,7 +99,7 @@
     
     </div>
     <!-- /container -->
-
+    <script src="/js/comments.js"></script>
 </body>
 
 </html>

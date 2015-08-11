@@ -15,3 +15,16 @@ body {
   position: relative;
 }
 
+#leftbar {
+	float:left;
+	width:30%;
+}
+
+#rightbar {
+	float:right;
+	width:70%;
+}
+
+#comment {
+	border-width: 1px;
+}
