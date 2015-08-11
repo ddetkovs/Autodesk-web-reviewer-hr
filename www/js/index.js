@@ -72,7 +72,7 @@ function getChannel(name, token, callback) {
 function getToken(callback) {
 
   $.ajax({
-    url: 'http://livereview.com:3000/api/token',
+    url: 'http://morning-stream-3036.herokuapp.com/api/token',
     type: 'GET',
     contentType: 'application/json',
     success: function(data) {
