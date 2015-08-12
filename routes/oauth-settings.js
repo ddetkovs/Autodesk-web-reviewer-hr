@@ -10,7 +10,7 @@ var exports = {
       "arg_prefix": "oauth_",
       // authentication
       "requestToken": {
-        "url": "https://api.twitter.com/oauth/request_token",
+        "url": "https://accounts-staging.autodesk.com/OAuth/RequestToken",
         "arg": ["consumer_key"]
       },
       "authorize": {
@@ -21,7 +21,7 @@ var exports = {
       },
       "accessToken": {
         "key": "request_token_secret",
-        "url": "https://api.twitter.com/oauth/access_token",
+        "url": "https://accounts-staging.autodesk.com/OAuth/AccessToken",
         "arg": ["consumer_key", {"request_token":"oauth_token"}, "oauth_verifier"]
       },
       // api

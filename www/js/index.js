@@ -1,5 +1,5 @@
 
-var hostname = "http://livereview.atodesk.com:3000";
+var hostname = "http://bootcamp1.autodesk.com";
 //var hostname = "http://morning-stream-3036.herokuapp.com";
 var defaultUrn = 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6bW9kZWwyMDE1LTA4LTExLTAwLTIxLTI2LWhyZG1vd2d3ejhpb3N0anVlbGR3c3gxaXZ6eW0vUm9ib3RBcm0uZHdmeA==';
 var token = '';
@@ -72,17 +72,21 @@ function getChannel(name, token, callback) {
 // we obtained in step 2.  In the real world, you would never do this.
 
 function getToken(callback) {
-
+  console.log('asdad');
+  callback('test');
+  return 'test';
   $.ajax({
     url: hostname+'/api/token',
     type: 'GET',
     contentType: 'application/json',
+    headers: {"Access-Control-Allow-Origin" : "*"},
     success: function(data) {
+      console.log('data is:', data);
     	token = JSON.parse(data).access_token;
       callback(token);
     },
     error: function(err) {
-      console.error(err);
+      console.error('errpr:', err);
     },
     complete: function() {
     }
