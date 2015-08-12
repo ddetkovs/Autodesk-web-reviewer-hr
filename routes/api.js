@@ -8,6 +8,11 @@ var crypto = require('crypto');
 var algorithm = 'aes-256-ctr';
 var password = credentials.password;
 var loginStorage = {};
+var PUBNUB = require('pubnub');
+var pubnub = PUBNUB({
+    subscribe_key: credentials.pubnub.subscribe_key, // always required
+    publish_key: credentials.pubnub.publish_key   	 // only required if publishing
+});
 
 var settings = {
     autodesk: {
@@ -51,17 +56,13 @@ passport.use('oauth', new OAuth1Strategy({
     callbackURL: "http://bootcamp1.autodesk.com/api/verify"
   },
   function(token, tokenSecret, profile, done) {
-  	setTimeout(function() {
-  	console.log('TOKEN: ',token);
-  	console.log("TOKENSECRET", tokenSecret);
   	getToken(token, tokenSecret, function(data) {
   		console.log("DATARECEIVED: ",data);
-  		if(data.access_token && data.refresh_token ) {
-		    loginStorage[data.access_token] = data.refresh_token;
-		    return done(null, encrypt(data.access_token));
+  		if(data.access_token && data.refresh_token && profile.username) {
+		    loginStorage[data.refresh_token] = { access_token: data.access_token, username: profile.username, expiration: profile.expiration};
+		    return done(null, encrypt(data.refresh_token));
 	  	} else return done(null, 'temp');
   	});
-  	}, 0)
   }
 ));
 
@@ -142,10 +143,12 @@ router.post('/getchannel', function(req, res) {
 });
 */
 var getToken = function(token, secret, callback) {
+	console.log('Token: ',token);
+	console.log('Secret: ',secret);
 	var text = "client_id="+credentials.credentials.client_id+
 						 "&client_secret="+credentials.credentials.client_secret+
 						 "&oauth1_token="+token+
-						 "&oauth1_secret="+secret	;
+						 "&oauth1_secret="+secret;
 	request({
 	    url: 'https://developer-stg.api.autodesk.com/authentication/v1/exchange',
 	    method: 'POST',
@@ -157,9 +160,51 @@ var getToken = function(token, secret, callback) {
     });
 }
 
+
+router.post('/comment', function(req,res) {
+	var data = '';
+	req.on('data', function(d) {
+		data+=d;
+	});
+
+	req.on('end', function() {
+		var body = JSON.parse(data);
+		var urn = body.urn;
+		console.log(urn);
+		var text = body.text;
+		console.log(text);
+		var token = body.token;
+		var name = 'anonymous';
+		var userCode = 'invalid';
+		if(req.session.passport.user) {
+			userCode = decrypt(req.session.passport.user);
+		}
+		if(loginStorage[userCode]) {
+			name = loginStorage[userCode].username;
+		}
+		console.log(name);
+		request({
+	    url: 'https://developer-stg.api.autodesk.com/comments/v2/resources/'+urn,
+	    method: 'POST',
+	    headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
+	    body: name+': '+text
+		}, 
+		function(error, response, body) {
+      if(!error) {
+      	pubnub.publish({
+	  				channel: urn,        
+	  				message: 'Comment added',
+	  				callback : function(m){res.send(200)}
+				});
+      } else {
+      	res.send(404);
+      }
+    });
+	})
+});
+
 router.get('/verify', passport.authenticate('oauth'),
   function(req, res) {
-	console.log('SESSTION2: ', req.session);
     // Successful authentication, redirect home.
     res.redirect('/api/token');
   });
@@ -185,7 +230,7 @@ router.get('/readtoken', function(req, res) {
 		if(loginStorage[userCode]) {
 
 			var body = { 
-				access_token: userCode
+				access_token: loginStorage[userCode].access_token
 			}
 			return res.send(200, body);
 		}

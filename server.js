@@ -24,7 +24,7 @@ function allowCrossDomain(req, res, next) {
    }
 }
 
-app.use(session({secret: 'klasda', cookie: {maxAge: 60000}}));
+app.use(session({secret: 'klasda', cookie: {maxAge: 600000}}));
 app.use('/', express.static(__dirname + '/www'));
 app.use(favicon(__dirname + '/www/images/favicon.ico'));
 app.use(passport.initialize());

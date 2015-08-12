@@ -18,7 +18,7 @@ $(document).ready(function () {
 
 	    'getAccessToken': function() { return token },
 
-	    'refreshToken': function() { return token }
+	    'refreshToken': function() { return token }  
 
 	  };
 
@@ -105,47 +105,30 @@ function postComment() {
 	var text = $('#commentText')[0].value;
 	getToken(function(token) {
 		$.ajax({
-		    url: 'https://developer-stg.api.autodesk.com/comments/v2/resources/'+defaultUrn,
+		    url: hostname+'/api/comment',
 		    type: 'POST',
 		    data: JSON.stringify({
-		    	body: text
+          token: token,
+		    	text: text,
+          urn: defaultUrn
 		    }),
-		    contentType: 'plain/text',
-		    headers: {"Access-Control-Allow-Origin": '*', Authorization: "Bearer "+token },
+		    contentType: 'application/json',
+		    headers: {"Access-Control-Allow-Origin": '*'},
 		    success: function(data) {
-          console.log('asdad');
-		    	/*
-		    
-		      // Don't bother if we have nothing to work with
-		      if (!data.results || !data.results.length) { return; }
-
-		      $('#comments').empty();
-
-		      for(var i = 0; i<data.results; i++) {
-		        var elem = $('<div></div>');
-		        elem.text = data.results[i];
-		        $('#comments').append(elem)
-		      }*/
-		      pubnub.publish({
-    				channel: defaultUrn,        
-    				message: 'Comment added',
-    				callback : function(m){console.log(m)}
-					});
-
-
+          loadComments(token);
 		    },
 		    error: function(err) {
 		      console.error(err);
 		    },
 		    complete: function() {
 		    }
-	  	});
-	  	loadComments(token);
+	  });
   });
   $('#commentText')[0].value = '';
 }
 
 function loadComments(token) {
+  console.log(token);
   $.ajax({
     url: 'https://developer-stg.api.autodesk.com/comments/v2/resources/'+defaultUrn,
     type: 'GET',
