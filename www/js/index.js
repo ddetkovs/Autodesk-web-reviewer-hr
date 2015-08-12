@@ -115,6 +115,7 @@ function postComment() {
 		    contentType: 'application/json',
 		    headers: {"Access-Control-Allow-Origin": '*'},
 		    success: function(data) {
+          console.log('data',data);
           loadComments(token);
 		    },
 		    error: function(err) {

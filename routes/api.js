@@ -170,27 +170,27 @@ router.post('/comment', function(req,res) {
 	req.on('end', function() {
 		var body = JSON.parse(data);
 		var urn = body.urn;
-		console.log(urn);
 		var text = body.text;
-		console.log(text);
 		var token = body.token;
 		var name = 'anonymous';
-		var userCode = 'invalid';
 		if(req.session.passport.user) {
 			userCode = decrypt(req.session.passport.user);
 		}
 		if(loginStorage[userCode]) {
 			name = loginStorage[userCode].username;
 		}
-		console.log(name);
+		text = name+': '+text;
+
+		console.log(text);
 		request({
 	    url: 'https://developer-stg.api.autodesk.com/comments/v2/resources/'+urn,
 	    method: 'POST',
-	    headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
-	    body: name+': '+text
+	    headers: { 'Content-Type': 'plain/text', Authorization: "Bearer "+token },
+	    body: JSON.stringify({ body: text })
 		}, 
 		function(error, response, body) {
       if(!error) {
+      	console.log('COMMENTED', body);
       	pubnub.publish({
 	  				channel: urn,        
 	  				message: 'Comment added',
