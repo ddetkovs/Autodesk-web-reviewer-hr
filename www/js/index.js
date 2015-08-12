@@ -2,7 +2,7 @@
 var hostname = "http://bootcamp1.autodesk.com";
 //var hostname = "http://morning-stream-3036.herokuapp.com";
 var defaultUrn = 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6bW9kZWwyMDE1LTA4LTExLTAwLTIxLTI2LWhyZG1vd2d3ejhpb3N0anVlbGR3c3gxaXZ6eW0vUm9ib3RBcm0uZHdmeA==';
-var token = '';
+var token;
 var pubnub = PUBNUB({
     subscribe_key: 'sub-c-6def75da-404e-11e5-9f25-02ee2ddab7fe', // always required
     publish_key: 'pub-c-7d98d445-8a56-4c0f-b8f8-19bf18192bc1'    // only required if publishing
@@ -25,6 +25,7 @@ $(document).ready(function () {
 	  var viewerElement = document.getElementById('viewer');
 
 	  var viewer = new Autodesk.Viewing.Viewer3D(viewerElement, {});
+    loadComments(token);
 
 	  Autodesk.Viewing.Initializer(options,function() {
 
@@ -71,27 +72,33 @@ function getChannel(name, token, callback) {
 
 // we obtained in step 2.  In the real world, you would never do this.
 
-function getToken(callback) {
-  console.log('asdad');
-  callback('test');
-  return 'test';
-  $.ajax({
-    url: hostname+'/api/token',
-    type: 'GET',
-    contentType: 'application/json',
-    headers: {"Access-Control-Allow-Origin" : "*"},
-    success: function(data) {
-      console.log('data is:', data);
-    	token = JSON.parse(data).access_token;
-      callback(token);
-    },
-    error: function(err) {
-      console.error('errpr:', err);
-    },
-    complete: function() {
-    }
-  });
+function refreshToken(callback) {
 
+}
+
+function getToken(callback) {
+  console.log("AAAAA");
+  if (token)
+  {
+    callback(token);
+  } else {
+    $.ajax({
+      url: hostname+'/api/readtoken',
+      type: 'GET',
+      contentType: 'application/json',
+      headers: {"Access-Control-Allow-Origin" : "*"},
+      success: function(data) {
+        console.log('data is:', data);
+      	token = data.access_token;
+        callback(token);
+      },
+      error: function(err) {
+        console.error('errpr:', err);
+      },
+      complete: function() {
+      }
+    });
+  }
 }
 
 function postComment() {
@@ -106,6 +113,7 @@ function postComment() {
 		    contentType: 'plain/text',
 		    headers: {"Access-Control-Allow-Origin": '*', Authorization: "Bearer "+token },
 		    success: function(data) {
+          console.log('asdad');
 		    	/*
 		    
 		      // Don't bother if we have nothing to work with

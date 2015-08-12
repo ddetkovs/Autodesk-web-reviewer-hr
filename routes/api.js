@@ -48,14 +48,20 @@ passport.use('oauth', new OAuth1Strategy({
     userAuthorizationURL: 'https://accounts-staging.autodesk.com/oauth/authorize',
     consumerKey: credentials.credentials.oauth_id,
     consumerSecret: credentials.credentials.oauth_secret,
-    callbackURL: "http://bootcamp1.autodesk.com/api/token"
+    callbackURL: "http://bootcamp1.autodesk.com/api/verify"
   },
   function(token, tokenSecret, profile, done) {
+  	setTimeout(function() {
+  	console.log('TOKEN: ',token);
+  	console.log("TOKENSECRET", tokenSecret);
   	getToken(token, tokenSecret, function(data) {
   		console.log("DATARECEIVED: ",data);
-	    loginStorage[token] = tokenSecret;
-	    return done(null, token, 'testinfo');
+  		if(data.access_token && data.refresh_token ) {
+		    loginStorage[data.access_token] = data.refresh_token;
+		    return done(null, encrypt(data.access_token));
+	  	} else return done(null, 'temp');
   	});
+  	}, 0)
   }
 ));
 
@@ -147,23 +153,46 @@ var getToken = function(token, secret, callback) {
 	    body: text
 		}, 
 		function(error, response, body) {
-			console.log("ERRGT: ",error);
-			console.log("RESPOGT: ",response);
-			console.log("BODYGT: ",body);
       callback(JSON.parse(body));
     });
 }
 
 router.get('/verify', passport.authenticate('oauth'),
   function(req, res) {
+	console.log('SESSTION2: ', req.session);
     // Successful authentication, redirect home.
-    console.log(req);
-    res.redirect('/');
+    res.redirect('/api/token');
   });
 
-router.get('/token', passport.authenticate('oauth'), function(req, res) {
-	console.log('oauth:', req.session);
-	res.redirect('/');
+router.get('/oauth', passport.authenticate('oauth'));
+
+router.get('/token', function(req, res) {
+	userCode = 'invalid';
+	if(req.session.passport.user) {
+		userCode = decrypt(req.session.passport.user);
+	}
+	if(loginStorage[userCode]) {
+		res.redirect('/');
+	} else {
+		res.redirect('/api/oauth');
+	}
+});
+
+router.get('/readtoken', function(req, res) {
+	userCode = 'invalid';
+	if(req.session.passport.user) {
+		userCode = decrypt(req.session.passport.user);
+		if(loginStorage[userCode]) {
+
+			var body = { 
+				access_token: userCode
+			}
+			return res.send(200, body);
+		}
+	} else {
+		console.log('not found token', 404);
+		res.send(404, null);
+	}
 });
 
 
