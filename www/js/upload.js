@@ -1,30 +1,73 @@
-$(document).ready (function () {
+var token;
 
+var hostname = "http://bootcamp1.autodesk.com";
+function getToken(callback) {
+  if (token)
+  {
+    callback(token);
+  } else {
+    $.ajax({
+      url: hostname+'/api/readtoken',
+      type: 'GET',
+      contentType: 'application/json',
+      headers: {"Access-Control-Allow-Origin" : "*"},
+      success: function(data) {
+        console.log('data is:', data);
+      	token = data.access_token;
+        callback(token);
+      },
+      error: function(err) {
+        console.log('errpr:', err);
+      },
+      complete: function() {
+      }
+    });
+  }
+}
+
+var objectKey = 0;
+
+$(document).ready (function () {
+	getToken(function() {});
 	$('#btnTranslateThisOne').click (function (evt) {
 		var files =document.getElementById ('files').files ;
 		if ( files.length == 0 )
 			return ;
 
 		$.each (files, function (key, value) {
-			var data =new FormData () ;
-			data.append (key, value) ;
+			var fileInput = document.getElementById('files');
+			var file = fileInput.files[0];
+			var data = new FormData();
+			data.append('file', file);
+			console.log(file);
+			var reader = new FileReader();
+			// Closure to capture the file information.
+			reader.onload = (function(theFile) {
+				return function(e) {
+					console.log(e.target.result);
+					objectKey++;
+				  $.ajax ({
+					url: hostname+'/api/uploadfile',
+					type: 'POST',
+					data: e.target.result,
+					cache: false,
+					//dataType: 'json',
+					processData: false, // Don't process the files
+					complete: null
+				}).done (function (data) {
+					$('#msg').text (value.name + ' file uploaded on your server') ;
+					console.log(data);
+				}).fail (function (xhr, ajaxOptions, thrownError) {
+					console.log(xhr);
+					console.log(thrownError);
+					$('#msg').text (value.name + ' upload failed!') ;
+				}) ;
+				};
+			})(file);
 
-			$.ajax ({
-				url: 'http://' + window.location.host + '/api/file',
-				type: 'post',
-				headers: { 'x-file-name': value.name },
-				data: data,
-				cache: false,
-				//dataType: 'json',
-				processData: false, // Don't process the files
-				contentType: false, // Set content type to false as jQuery will tell the server its a query string request
-				complete: null
-			}).done (function (data) {
-				$('#msg').text (value.name + ' file uploaded on your server') ;
-				translate (data) ;
-			}).fail (function (xhr, ajaxOptions, thrownError) {
-				$('#msg').text (value.name + ' upload failed!') ;
-			}) ;
+			// Read in the image file as a data URL.
+			reader.readAsDataURL(file);
+			
 		}) ;
 
 	}) ;

@@ -1,7 +1,7 @@
 
 var hostname = "http://bootcamp1.autodesk.com";
 //var hostname = "http://morning-stream-3036.herokuapp.com";
-var defaultUrn = 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6bW9kZWwyMDE1LTA4LTExLTAwLTIxLTI2LWhyZG1vd2d3ejhpb3N0anVlbGR3c3gxaXZ6eW0vUm9ib3RBcm0uZHdmeA==';
+var defaultUrn = 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Ym9vdGNhbXAxdGVhbTEvYm9vdGNhbXAxdGVzdG9iamVjdDE=';
 var token;
 var pubnub = PUBNUB({
     subscribe_key: 'sub-c-6def75da-404e-11e5-9f25-02ee2ddab7fe', // always required
@@ -77,7 +77,6 @@ function refreshToken(callback) {
 }
 
 function getToken(callback) {
-  console.log("AAAAA");
   if (token)
   {
     callback(token);

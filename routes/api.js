@@ -142,6 +142,21 @@ router.post('/getchannel', function(req, res) {
 	});
 });
 */
+
+var getTwoLegToken = function(callback) {
+	var text = "client_id="+credentials.credentials.client_id+"&client_secret="+credentials.credentials.client_secret+"&grant_type=client_credentials";
+	request({
+    url: 'https://developer-stg.api.autodesk.com/authentication/v1/authenticate',
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
+    body: text
+	}, 
+	function(error, response, body) {
+		console.log(JSON.parse(body).access_token);
+    callback(JSON.parse(body).access_token);
+  });
+}
+
 var getToken = function(token, secret, callback) {
 	console.log('Token: ',token);
 	console.log('Secret: ',secret);
@@ -160,6 +175,33 @@ var getToken = function(token, secret, callback) {
     });
 }
 
+var objectKey = 0;
+
+router.post('/uploadfile', function(req,res) {
+	var file = '';
+	req.on('data', function(d) {
+		file+=d;
+	});
+	objectKey++;
+	req.on('end', function() {
+		getTwoLegToken(function(token) {
+			request({
+				url: 'https://developer-stg.api.autodesk.com/oss/v2/buckets/bootcamp1team1/objects/'+'bootcamp1testobject'+objectKey,
+		    method: 'PUT',
+				headers: { 'Authorization': 'Bearer '+token, 'Content-Type': 'application/x-www-form-urlencoded'},
+				data: file,
+				}, 
+			function(error, response, body) {
+	      console.log(body);
+	      if(error) {
+	      	res.send(404, null);
+	      } else {
+	      	res.send(200);
+	      }
+	    });
+		});
+	});
+});
 
 router.post('/comment', function(req,res) {
 	var data = '';
