@@ -1,7 +1,7 @@
 
 var hostname = "http://bootcamp1.autodesk.com";
 //var hostname = "http://morning-stream-3036.herokuapp.com";
-var defaultUrn = 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Ym9vdGNhbXAxdGVhbTEvc2FtMi5mM2Q=';
+var defaultUrn = '';
 var token;
 var pubnub = PUBNUB({
     subscribe_key: 'sub-c-6def75da-404e-11e5-9f25-02ee2ddab7fe', // always required
@@ -11,13 +11,14 @@ var viewer;
 
 $(document).ready(function () {
   //Creates the item
+  /*
   var itemval = $('<option value="dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Ym9vdGNhbXAxdGVhbTEvc2FtMi5mM2Q=">file1</option>');
   var itemvale = $('<option value="dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Ym9vdGNhbXAxdGVhbTEvYk5YcGFydDF2Mi5mM2Q=">file2</option>');
   var itemvalt = $('<option value="dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Ym9vdGNhbXAxdGVhbTEvYk5YcGFydDF2MS5wcnQ=">file3</option>')
   $('#viewsel').append(itemval);
   $('#viewsel').append(itemvale);
   $('#viewsel').append(itemvalt);
-
+*/
 	initViewer();
 });
 
@@ -70,13 +71,14 @@ function loadUrns() {
       contentType: 'application/json',
       headers: {"Access-Control-Allow-Origin" : "*"},
       success: function(data) {
-        data = JSON.parse(data);
+        data = JSON.parse(data);  
         if(data.length) {
           for(var i = 0; i<data.length;i++) {
             console.log(data[i]);
              var itemval = $('<option value="'+data[i]+'">file'+i+'</option>');
               $('#viewsel').append(itemval);
           }
+          changeModel(data[i]);
         }
       },
       error: function(err) {
