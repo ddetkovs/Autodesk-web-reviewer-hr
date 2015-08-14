@@ -1,53 +1,99 @@
 
 var hostname = "http://bootcamp1.autodesk.com";
 //var hostname = "http://morning-stream-3036.herokuapp.com";
-var defaultUrn = 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Ym9vdGNhbXAxdGVhbTEvYm9vdGNhbXAxdGVzdG9iamVjdDE=';
+var defaultUrn = 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Ym9vdGNhbXAxdGVhbTEvc2FtMi5mM2Q=';
 var token;
 var pubnub = PUBNUB({
     subscribe_key: 'sub-c-6def75da-404e-11e5-9f25-02ee2ddab7fe', // always required
     publish_key: 'pub-c-7d98d445-8a56-4c0f-b8f8-19bf18192bc1'    // only required if publishing
 });
+var viewer;
 
 $(document).ready(function () {
-	getToken(function(t) {
-	  var options = {
+  //Creates the item
+  var itemval = $('<option value="dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Ym9vdGNhbXAxdGVhbTEvc2FtMi5mM2Q=">file1</option>');
+  var itemvale = $('<option value="dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Ym9vdGNhbXAxdGVhbTEvYk5YcGFydDF2Mi5mM2Q=">file2</option>');
+  var itemvalt = $('<option value="dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Ym9vdGNhbXAxdGVhbTEvYk5YcGFydDF2MS5wcnQ=">file3</option>')
+  $('#viewsel').append(itemval);
+  $('#viewsel').append(itemvale);
+  $('#viewsel').append(itemvalt);
 
-	    'document' : 'urn:'+defaultUrn,
+	initViewer();
+});
 
-	    'env':'AutodeskStaging',
+function initViewer() {
+  getToken(function(t) {
+    var options = {
 
-	    'getAccessToken': function() { return token },
+      'document' : 'urn:'+defaultUrn,
 
-	    'refreshToken': function() { return token }  
+      'env':'AutodeskStaging',
 
-	  };
+      'getAccessToken': function() { return token },
 
-	  var viewerElement = document.getElementById('viewer');
+      'refreshToken': function() { return token }  
 
-	  var viewer = new Autodesk.Viewing.Viewer3D(viewerElement, {});
+    };
+
+    var viewerElement = document.getElementById('viewer');
+
+    viewer = new Autodesk.Viewing.Viewer3D(viewerElement, {});
     loadComments(token);
 
-	  Autodesk.Viewing.Initializer(options,function() {
+    Autodesk.Viewing.Initializer(options,function() {
 
-	    viewer.initialize();
-	    loadComments(token);
-    	pubnub.subscribe({
-		    channel: defaultUrn,
-		    message: function(m){console.log(m);loadComments(token)},
-		    error: function (error) {
-		      // Handle error here
-		      console.log(JSON.stringify(error));
-  			}
-			});
-	    loadDocument(viewer, options.document);
+      viewer.initialize();
+      loadComments(token);
+      pubnub.subscribe({
+        channel: defaultUrn,
+        message: function(m){console.log(m);loadComments(token)},
+        error: function (error) {
+          // Handle error here
+          console.log(JSON.stringify(error));
+        }
+      });
+      loadDocument(viewer, options.document);
 
-	  });
-	});
-});
+    });
+  });
+}
 
 function onError(error) {
     console.log('Error: ' + error);
 };
+
+function loadUrns() {
+  $('#viewsel').empty();
+  $.ajax({
+      url: hostname+'/api/geturns',
+      type: 'GET',
+      contentType: 'application/json',
+      headers: {"Access-Control-Allow-Origin" : "*"},
+      success: function(data) {
+        data = JSON.parse(data);
+        if(data.length) {
+          for(var i = 0; i<data.length;i++) {
+            console.log(data[i]);
+             var itemval = $('<option value="'+data[i]+'">file'+i+'</option>');
+              $('#viewsel').append(itemval);
+          }
+        }
+      },
+      error: function(err) {
+        console.error('errpr:', err);
+      },
+      complete: function() {
+      }
+  });
+/*
+
+  var itemval = $('<option value="dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Ym9vdGNhbXAxdGVhbTEvc2FtMi5mM2Q=">file1</option>');
+  var itemvale = $('<option value="dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Ym9vdGNhbXAxdGVhbTEvYk5YcGFydDF2Mi5mM2Q=">file2</option>');
+  var itemvalt = $('<option value="dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Ym9vdGNhbXAxdGVhbTEvYk5YcGFydDF2MS5wcnQ=">file3</option>')
+  $('#viewsel').append(itemval);
+  $('#viewsel').append(itemvale);
+  $('#viewsel').append(itemvalt);*/
+}
 
 /*
 function getChannel(name, token, callback) {
@@ -71,6 +117,13 @@ function getChannel(name, token, callback) {
 // This method returns a valid access token  For the Quick Start we are just returning the access token
 
 // we obtained in step 2.  In the real world, you would never do this.
+
+function changeModel(urn) {
+  viewer.uninitialize();
+  console.log('Loading urn: ',urn);
+  defaultUrn = urn;
+  initViewer();
+}
 
 function refreshToken(callback) {
 
@@ -169,6 +222,6 @@ function loadDocument(viewer, documentId) {
         viewer.load(doc.getViewablePath(geometryItems[0]));
     }
  }, function(errorMsg) {// onErrorCallback
-    alert("Load Error: " + errorMsg);
+    console.log("Load Error: " + errorMsg);
     });
 }

@@ -37,37 +37,41 @@ $(document).ready (function () {
 		$.each (files, function (key, value) {
 			var fileInput = document.getElementById('files');
 			var file = fileInput.files[0];
-			var data = new FormData();
-			data.append('file', file);
-			console.log(file);
-			var reader = new FileReader();
-			// Closure to capture the file information.
-			reader.onload = (function(theFile) {
-				return function(e) {
-					console.log(e.target.result);
-					objectKey++;
-				  $.ajax ({
-					url: hostname+'/api/uploadfile',
-					type: 'POST',
-					data: e.target.result,
-					cache: false,
-					//dataType: 'json',
-					processData: false, // Don't process the files
-					complete: null
-				}).done (function (data) {
-					$('#msg').text (value.name + ' file uploaded on your server') ;
-					console.log(data);
-				}).fail (function (xhr, ajaxOptions, thrownError) {
-					console.log(xhr);
-					console.log(thrownError);
-					$('#msg').text (value.name + ' upload failed!') ;
-				}) ;
-				};
-			})(file);
+			console.log(key);
+			console.log(value);
+			var oReq = new XMLHttpRequest();
+			var url = 'https://developer-stg.api.autodesk.com/oss/v2/buckets/bootcamp1team1/objects/'+value.name;
+			oReq.open("PUT", url, true);
+			oReq.setRequestHeader("Authorization", 'Bearer '+token);
+			oReq.setRequestHeader("Content-Type", 'application/stream');
+			oReq.onload = function (oEvent) {
+				var objectId = JSON.parse(oReq.responseText).objectId;
+				var urn = btoa(objectId);
 
-			// Read in the image file as a data URL.
-			reader.readAsDataURL(file);
-			
+			  console.log(oReq.responseText);
+			  console.log(urn);
+			  $.ajax({
+			  	url: 'https://developer-stg.api.autodesk.com/derivativeservice/v2/registration',
+			  	type: 'POST',
+			  	data: JSON.stringify({ design : urn }),
+			  	headers: { "Authorization": 'Bearer '+token, "Content-Type": 'application/json'},
+			  	success: function(res) {
+			  		console.log(res);
+			  		$.ajax({
+					  	url: hostname+'/api/addurn',
+					  	type: 'POST',
+					  	data: JSON.stringify({ urn : urn }),
+					  	headers: {"Content-Type": 'application/json'},
+					  	success: function(res) {
+					  		console.log(res);
+					  	}
+					  })
+			  	}
+			  })
+
+			};
+
+			oReq.send(file);
 		}) ;
 
 	}) ;
