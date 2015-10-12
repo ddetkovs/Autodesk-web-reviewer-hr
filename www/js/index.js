@@ -45,12 +45,13 @@
 
       var viewerElement = document.getElementById('viewer');
 
-      viewer = new Autodesk.Viewing.Viewer3D(viewerElement, {});
+      viewer = new Autodesk.Viewing.Private.GuiViewer3D(viewerElement, {});
       loadComments(token);
 
       Autodesk.Viewing.Initializer(options, function() {
 
         viewer.initialize();
+        debugger;
         loadComments(token);
         pubnub.subscribe({
           channel: defaultUrn,
