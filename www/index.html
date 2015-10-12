@@ -38,31 +38,21 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#">LMV DEMO</a>
-            </div>
-        </div>
-    </nav>
     <div class="container-fluid">
       <div class="row">
-        <div class="comments-container col-md-3 col-lg-3" >
+        <div class="comments-container col-sm-3 col-md-3 col-lg-3" >
+            <h2>Select Your File</h2>
+            <select class="form-control" id="viewsel" ></select>
+            <a href="/upload.html">Or upload a new file</a>
             <h2>Comments</h2>
-            <a href="/upload.html">Upload a file</a>
+
             <form name="myform">
                 <input id="commentText" type="text">
                 <input id="comment-btn" type="button" value="Comment">
             </form>
             <div id="comments"></div>
         </div>
-        <div class="viewer-container col-md-9 col-lg-9" >
-
-            <h2>Your File</h2>
-            <select class="form-control" id="viewsel" ></select>
-            <div id="viewer"></div>
-
-        </div>
+        <div id="viewer" class="viewer-container col-sm-9 col-md-9 col-lg-9" ></div>
       </div>
 
     </div>

@@ -9,7 +9,7 @@
   var viewer;
 
   $(document).ready(function() {
-    initViewer();
+    // initViewer();
 
     $('#viewsel').change(function(){
       changeModel(this.value)
@@ -74,6 +74,8 @@
 
   function loadUrns() {
     $('#viewsel').empty();
+    $('#viewsel').append('<option value="" selected></option>');
+
     $.ajax({
       url: hostname + '/api/geturns',
       type: 'GET',
@@ -89,7 +91,7 @@
             var itemval = $('<option value="' + data[i] + '">file' + i + '</option>');
             $('#viewsel').append(itemval);
           }
-          changeModel(data[i - 1]);
+          // changeModel(data[i - 1]);
         }
       },
       error: function(err) {
@@ -103,7 +105,7 @@
   // we obtained in step 2.  In the real world, you would never do this.
 
   function changeModel(urn) {
-    viewer.uninitialize();
+    viewer !== undefined && viewer.uninitialize();
     console.log('Loading urn: ', urn);
     defaultUrn = urn;
     initViewer();
