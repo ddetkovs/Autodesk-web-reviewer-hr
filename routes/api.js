@@ -287,7 +287,7 @@ router.post('/addurn', function (req, res) {
         data += d;
     });
     req.on('end', function () {
-      console.log('data', data);
+        console.log('data', data);
         data = JSON.parse(data);
         checkToken(req, function (userCode) {
             var username = loginStorage[userCode].username;
@@ -308,7 +308,7 @@ router.get('/geturns', function (req, res) {
         var username = loginStorage[userCode].username;
         for (key in urnStorage[username]) {
             console.log('status', urnStorage[username][key]);
-            if (urnStorage[username][key] !== 'pending' || urnStorage[username][key] !== 'inprogress' ) {
+            if (urnStorage[username][key] !== 'pending' || urnStorage[username][key] !== 'inprogress') {
                 urnArr.push(key);
             }
         }
