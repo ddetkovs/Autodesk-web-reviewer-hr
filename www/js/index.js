@@ -9,14 +9,15 @@
   var viewer;
 
   $(document).ready(function() {
-    // initViewer();
 
     $('#viewsel').change(function(){
       changeModel(this.value)
     });
 
-    $('#comment-btn').click(function(){
+
+    $('#comment-form').submit(function(evnt){
       postComment();
+      evnt.preventDefault();
     });
 
     loadUrns();
@@ -109,10 +110,6 @@
     console.log('Loading urn: ', urn);
     defaultUrn = urn;
     initViewer();
-  }
-
-  function refreshToken(callback) {
-
   }
 
   function getToken(callback) {
