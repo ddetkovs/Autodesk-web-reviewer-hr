@@ -10,7 +10,18 @@
 
   $(document).ready(function() {
     initViewer();
+
+    $('#viewsel').change(function(){
+      changeModel(this.value)
+    });
+
+    $('#comment-btn').click(function(){
+      postComment();
+    });
+
+    loadUrns();
   });
+
 
   function initViewer() {
 
@@ -43,7 +54,8 @@
         pubnub.subscribe({
           channel: defaultUrn,
           message: function(m) {
-            console.log(m);loadComments(token)
+            console.log(m);
+            loadComments(token)
           },
           error: function(error) {
             // Handle error here

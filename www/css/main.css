@@ -2,27 +2,9 @@
    Author's custom styles
    ========================================================================== */
 
-body {
-  padding-top: 50px;
-  padding-bottom: 20px;
-  margin: 0;
-}
-
-#viewerDiv {
-  height: 480px; 
-  width: 1000px; 
-  overflow: hidden; 
-  position: relative;
-}
-
-#leftbar {
-	float:left;
-	width:30%;
-}
-
-#rightbar {
-	float:right;
-	width:70%;
+html,body, .container-fluid, .row, .comments-container, .viewer-container {
+    height: 100%;
+    /* min-height: 100%; */
 }
 
 #comment {
