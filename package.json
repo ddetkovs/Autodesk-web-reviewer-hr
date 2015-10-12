@@ -35,5 +35,11 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/remotebeta/sprint.autodesk.1.web-reviewer"
+  },
+  "esformatter":{
+    "root": true,
+    "indent": {
+      "value": "  "
+    }
   }
 }
