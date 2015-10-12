@@ -104,8 +104,8 @@ router.post('/getchannel', function(req, res) {
 								}),
 							headers: {
 								'Content-Type': 'text/json',
-								"Access-Control-Allow-Origin": '*', 
-								Authorization: "Bearer "+token 
+								"Access-Control-Allow-Origin": '*',
+								Authorization: "Bearer "+token
 							}
 						}, function(err, resp, b) {
 							console.log(resp.statusCode);
@@ -213,7 +213,7 @@ router.post('/uploadfile', function (req, res) {
     req.on('end', function () {
         getTwoLegToken(function (token) {
             request({
-                url: 'https://developer-stg.api.autodesk.com/oss/v2/buckets/bootcamp1team1/objects/' + 'masdfile' + objectKey + '.f3d',
+                url: 'https://developer-stg.api.autodesk.com/oss/v2/buckets/bootcamp1team1/objects/' + 'ddfa' + objectKey + '.f3d',
                 method: 'PUT',
                 headers: {
                     'Authorization': 'Bearer ' + token,
@@ -307,7 +307,8 @@ router.get('/geturns', function (req, res) {
         var urnArr = [];
         var username = loginStorage[userCode].username;
         for (key in urnStorage[username]) {
-            if (urnStorage[username][key] != -'pending') {
+            console.log('status', urnStorage[username][key]);
+            if (urnStorage[username][key] !== 'pending' || urnStorage[username][key] !== 'inprogress' ) {
                 urnArr.push(key);
             }
         }
@@ -348,7 +349,7 @@ request({
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
     body: text
-	}, 
+	},
 	function(error, response, body) {
       res.send(200, body);
     });
