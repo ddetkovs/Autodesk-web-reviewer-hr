@@ -1,6 +1,6 @@
 var token;
 
-var hostname = "http://bootcamp1.autodesk.com";
+var hostname = "http://bootcamp1.autodesk.com:3000";
 function getToken(callback) {
   if (token)
   {
@@ -40,7 +40,7 @@ $(document).ready (function () {
 			console.log(key);
 			console.log(value);
 			var oReq = new XMLHttpRequest();
-			var url = 'https://developer-stg.api.autodesk.com/oss/v2/buckets/bootcamp1team1/objects/'+value.name;
+			var url = 'https://developer-stg.api.autodesk.com/oss/v2/buckets/bootcamp2team1/objects/'+value.name;
 			oReq.open("PUT", url, true);
 			oReq.setRequestHeader("Authorization", 'Bearer '+token);
 			oReq.setRequestHeader("Content-Type", 'application/stream');

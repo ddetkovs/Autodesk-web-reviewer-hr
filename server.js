@@ -27,9 +27,8 @@ function allowCrossDomain(req, res, next) {
 app.use(session({secret: 'klasda', cookie: {maxAge: 600000}}));
 app.use('/', express.static(__dirname + '/www'));
 app.use(favicon(__dirname + '/www/images/favicon.ico'));
-app.use(passport.initialize());
 app.use('/api', api);
-app.set('port', process.env.PORT || 80);
+app.set('port', process.env.PORT || 3000);
 
 var server = app.listen(app.get('port'), function() {
     console.log('Server listening on port ' + server.address().port);
